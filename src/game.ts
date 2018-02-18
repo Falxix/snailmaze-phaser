@@ -4,6 +4,10 @@ import "pixi";
 import "p2";
 import * as Phaser from "phaser-ce";
 import * as WebFont from 'webfontloader';
+import { Constants } from './constants';
+import { Snail } from "./snail";
+import { Tilemap } from "phaser-ce";
+import { Indicator } from './indicator';
 
 declare global {
   interface Window {
@@ -12,8 +16,6 @@ declare global {
 }
 window.game = window.game || {};
 
-import { Snail } from "./snail";
-import { Tilemap } from "phaser-ce";
 
 class SimpleGame {
   baseX: number = 256;
@@ -24,6 +26,8 @@ class SimpleGame {
   mapScroll: number;
   collisionLayer: Phaser.TilemapLayer;
   welcomeText : Phaser.Text;
+  gameRound : Indicator;
+  timeRemaining : Indicator;
 
   constructor() {
     this.game = new Phaser.Game(
@@ -34,7 +38,7 @@ class SimpleGame {
       { preload: this.preload, create: this.create, update: this.update },
       false,
       false
-    );
+    );    
   }  
 
   preload() {
@@ -60,14 +64,19 @@ class SimpleGame {
     this.collisionLayer.setScale(this.scale);
     this.collisionLayer.resizeWorld();
     map.setCollision(1);
+        
+    this.welcomeText = this.game.add.text(Constants.WelcomePosition.x,Constants.WelcomePosition.y,"WELCOME TO SNAIL MAZE!",Constants.FontStyle);
+    this.gameRound = new Indicator('RD',1);
+    this.timeRemaining = new Indicator('TIME',Constants.StartTime);
+    setInterval(() => {
+      if (this.timeRemaining.Value > 0){
+        this.timeRemaining.Value--;
+      }
+    },1000)
 
-    let style: Phaser.PhaserTextStyle = {      
-      font: "16px press_start_kregular",
-      fill: "white",
-      align: "center"
-    };    
-    this.welcomeText = this.game.add.text(300,100,"Welcome to Snail Maze!",style);
-    this.welcomeText.anchor.setTo(0.5,0.5);
+    this.gameRound.addToGame(this.game, Constants.RoundPosition);
+    this.timeRemaining.addToGame(this.game, Constants.TimePosition);
+
     //this.collisionLayer.debug = true;
 
     this.game.camera.y = map.heightInPixels;
@@ -76,14 +85,9 @@ class SimpleGame {
 
   update(): void {
     this.game.physics.arcade.collide(this.snail.sprite, this.collisionLayer);
-    this.game.debug.text(
-      `Sun Sprite: ${this.snail.sprite.x},${this.snail.sprite.y}`, 0, 20
-    );
-    this.game.debug.text(
-      `Camera: ${this.game.camera.x},${this.game.camera.y}`,0,40
-    );
-    
     this.snail.update(this.game);
+    this.gameRound.update();
+    this.timeRemaining.update();
   }
 }
 
