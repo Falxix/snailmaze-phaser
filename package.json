@@ -4,6 +4,7 @@
   "description": "a game about a snail",
   "main": "index.js",
   "dependencies": {
+    "@types/webfontloader": "^1.6.29",
     "phaser-ce": "^2.10.0",
     "webfontloader": "^1.6.28"
   },

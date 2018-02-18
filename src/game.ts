@@ -1,11 +1,14 @@
+/// <reference path="../node_modules/@types/webfontloader/index.d.ts" />
+
 import "pixi";
 import "p2";
 import * as Phaser from "phaser-ce";
+import * as WebFont from 'webfontloader';
 
 declare global {
   interface Window {
     game: any;
-  }
+  }  
 }
 window.game = window.game || {};
 
@@ -16,6 +19,11 @@ class SimpleGame {
   baseX: number = 256;
   baseY: number = 192;
   scale: number = 3;
+  game: Phaser.Game;
+  snail: Snail;
+  mapScroll: number;
+  collisionLayer: Phaser.TilemapLayer;
+  welcomeText : Phaser.Text;
 
   constructor() {
     this.game = new Phaser.Game(
@@ -27,12 +35,7 @@ class SimpleGame {
       false,
       false
     );
-  }
-
-  game: Phaser.Game;
-  snail: Snail;
-  mapScroll: number;
-  collisionLayer: Phaser.TilemapLayer;
+  }  
 
   preload() {
     this.game.load.tilemap(
@@ -51,13 +54,20 @@ class SimpleGame {
   create() {
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
     let map = this.game.add.tilemap("map", 1, 1);
-    map.addTilesetImage("tile");
+    map.addTilesetImage("tile");    
 
     this.collisionLayer = map.createLayer(0);
     this.collisionLayer.setScale(this.scale);
     this.collisionLayer.resizeWorld();
     map.setCollision(1);
 
+    let style: Phaser.PhaserTextStyle = {      
+      font: "16px press_start_kregular",
+      fill: "white",
+      align: "center"
+    };    
+    this.welcomeText = this.game.add.text(300,100,"Welcome to Snail Maze!",style);
+    this.welcomeText.anchor.setTo(0.5,0.5);
     //this.collisionLayer.debug = true;
 
     this.game.camera.y = map.heightInPixels;
@@ -72,10 +82,24 @@ class SimpleGame {
     this.game.debug.text(
       `Camera: ${this.game.camera.x},${this.game.camera.y}`,0,40
     );
+    
     this.snail.update(this.game);
   }
 }
 
 window.onload = () => {
-  var game = new SimpleGame();
-};
+let webFontLoading : WebFont.Config = {
+  active: () => {
+    runGame();
+  },
+    custom: {
+      families: ['press_start_kregular'],
+      urls: ['assets/fonts/stylesheet.css']
+    }
+  };
+  WebFont.load(webFontLoading);
+
+  function runGame(){
+    var game = new SimpleGame();
+  }
+}
