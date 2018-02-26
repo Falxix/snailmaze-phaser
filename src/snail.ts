@@ -4,21 +4,30 @@ export class Snail{
     private spriteName : string = 'snail';
     public movementUnit : number = 100;
     public sprite : Phaser.Sprite;
-    private baseSize : Point = new Phaser.Point(5,5);
-    
+    private baseSize : Point = new Phaser.Point(5,5);     
+    private isKilled: boolean = false;   
 
-    public create(game : Phaser.Game, scale: number){
-        let startX = 50;
-        let startY = 550;
-        this.sprite = game.add.sprite(startX, startY, this.spriteName);
+    public create(game : Phaser.Game, scale: number){             
+        this.sprite = game.add.sprite(0,0, this.spriteName);
         this.sprite.anchor.setTo(0.5,0.5);
         this.sprite.scale.setTo(scale - 0.4);
-        game.physics.enable(this.sprite, Phaser.Physics.ARCADE);                
+        game.physics.enable(this.sprite, Phaser.Physics.ARCADE);               
         
+    }
+
+    public kill(): void{
+        this.sprite.visible = false;
+        this.isKilled = true;
     }
     
     public update(game : Phaser.Game){
-        
+        if (this.isKilled){
+            return;
+        }
+        this.movement(game);                
+    }
+
+    private movement(game: Phaser.Game){
         this.sprite.body.velocity.x = 0;
         this.sprite.body.velocity.y = 0;
 
@@ -39,6 +48,5 @@ export class Snail{
         {
             this.sprite.body.velocity.y = this.movementUnit;
         }
-        
     }
 }
