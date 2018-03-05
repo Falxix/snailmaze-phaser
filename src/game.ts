@@ -77,17 +77,15 @@ class SimpleGame {
 
     //this.collisionLayer.debug = true;
     this.snail.create(this.game,this.scale);
-    this.snail.sprite.position.x = this.maze.StartPosition.x + (1 * this.maze.Scale);
-    this.snail.sprite.position.y = this.maze.StartPosition.y - (1 * this.maze.Scale);
-    console.log(this.maze.StartPosition);
-    console.log(this.maze.GoalGroup);    
+    this.snail.sprite.position.x = this.maze.StartPosition.x + (1 * this.maze.Scale - 1.5);
+    this.snail.sprite.position.y = (this.maze.StartPosition.y - (1 * this.maze.Scale) +1.5);
   }
 
   update(): void {
     if (this.isSolved === true){
       return;
     }
-    this.game.physics.arcade.collide(this.snail.sprite, this.maze.CollisionLayer);    
+    this.game.physics.arcade.collide(this.snail.sprite, this.maze.CollisionLayer,() => {this.snail.stop();});    
     this.snail.update(this.game);    
     this.gameRound.update();
     this.timeRemaining.update();

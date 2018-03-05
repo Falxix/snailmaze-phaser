@@ -15,7 +15,7 @@ export class MapLoader{
     }
 
     public loadMap(config: MapConfiguration): Maze{
-        let map = this.game.add.tilemap("map",1,1);        
+        let map = this.game.add.tilemap("map",1,1);      
         map.addTilesetImage("tile");
         let collisionLayer = map.createLayer(0);
         collisionLayer.setScale(config.MapScale);
