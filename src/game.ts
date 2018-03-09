@@ -75,9 +75,9 @@ class SimpleGame {
     this.gameRound.addToGame(this.game, Constants.RoundPosition);
     this.timeRemaining.addToGame(this.game, Constants.TimePosition);
 
-    //this.collisionLayer.debug = true;
+    //this.maze.CollisionLayer.debug = true;
     this.snail.create(this.game,this.scale);
-    this.snail.sprite.position.x = this.maze.StartPosition.x + (1 * this.maze.Scale - 1.5);
+    this.snail.sprite.position.x = this.maze.StartPosition.x + (1 * this.maze.Scale +1.5);
     this.snail.sprite.position.y = (this.maze.StartPosition.y - (1 * this.maze.Scale) +1.5);
   }
 
