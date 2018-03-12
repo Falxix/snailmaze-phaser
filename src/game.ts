@@ -48,7 +48,7 @@ class SimpleGame {
   preload() {
     this.mapLoader = new MapLoader(this.game);    
     this.mapLoader.loadAssets(Constants.StartingMap);    
-    this.game.load.image("snail", "assets/snail.png");
+    this.game.load.spritesheet("snail", "assets/snails.png",8,8,2);
     this.snail = new Snail();
     this.scale = 3;
   }

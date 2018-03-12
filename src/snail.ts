@@ -13,11 +13,14 @@ export class Snail{
     private scale: number;
     private unitDistance: number;
     private direction: Direction;
+    private animation: Phaser.Animation;
 
     public create(game : Phaser.Game, scale: number){       
         this.scale = scale;      
         this.unitDistance = 8 * scale;
         this.sprite = this.initializeSprite(game, scale);
+        this.animation = this.sprite.animations.add('walk');
+
         this.collisionSprite = this.initializeSprite(game, scale);
         this.collisionSprite.body.setSize(10,10,3,3);
         this.collisionSprite.visible = false;
@@ -44,6 +47,7 @@ export class Snail{
         this.sprite.position.x = this.fromPosition.x;
         this.sprite.position.y = this.fromPosition.y;
         this.sprite.fresh = false;
+        this.animation.stop();
 
         this.collisionSprite.body.reset(this.fromPosition.x, this.fromPosition.y);
         this.collisionSprite.position.x = this.fromPosition.x;
@@ -59,6 +63,8 @@ export class Snail{
         this.move(game);        
         if (!this.isMoving) {
             this.checkMovement(game);            
+        } else if (!this.animation.isPlaying) {
+            this.animation.play(10,true);
         }
 
     }    
@@ -82,10 +88,12 @@ export class Snail{
         }
 
         if (isThere) {
+            this.animation.stop();
             this.isMoving = false;   
             this.sprite.body.velocity.x = 0;
             this.sprite.body.velocity.y = 0;
             this.sprite.position = new Phaser.Point(this.targetPoint.x, this.targetPoint.y);
+            //this.animation.stop();            
         }        
     }
 
