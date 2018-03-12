@@ -3,8 +3,9 @@ import { Direction } from "./enums";
 
 export class Snail{
     private spriteName : string = 'snail';
-    public movementUnit : number = 100;
+    public movementUnit : number = 150;
     public sprite : Phaser.Sprite;
+    public collisionSprite: Phaser.Sprite;
     private isKilled: boolean = false;
     private isMoving: boolean = false;
     private targetPoint: Phaser.Point = new Phaser.Point(0,0);
@@ -15,12 +16,20 @@ export class Snail{
 
     public create(game : Phaser.Game, scale: number){       
         this.scale = scale;      
-        this.sprite = game.add.sprite(0,0, this.spriteName);
-        this.sprite.anchor.setTo(0.5,0.5); 
-        this.sprite.scale.setTo(scale - 0.4);
-        game.physics.enable(this.sprite, Phaser.Physics.ARCADE);               
-        this.sprite.body.setSize(1,1,3,3);
         this.unitDistance = 8 * scale;
+        this.sprite = this.initializeSprite(game, scale);
+        this.collisionSprite = this.initializeSprite(game, scale);
+        this.collisionSprite.body.setSize(10,10,3,3);
+        this.collisionSprite.visible = false;
+    }
+
+    private initializeSprite(game: Phaser.Game, scale: number): Phaser.Sprite {
+        const sprite = game.add.sprite(0,0, this.spriteName);
+        sprite.anchor.setTo(0.5,0.5); 
+        sprite.scale.setTo(scale - 0.4);
+        game.physics.enable(sprite, Phaser.Physics.ARCADE);               
+        sprite.body.setSize(1,1,3,3);
+        return sprite;
     }
 
     public kill(): void{
@@ -35,45 +44,40 @@ export class Snail{
         this.sprite.position.x = this.fromPosition.x;
         this.sprite.position.y = this.fromPosition.y;
         this.sprite.fresh = false;
-        console.log('REVERT '+this.sprite.position);
+
+        this.collisionSprite.body.reset(this.fromPosition.x, this.fromPosition.y);
+        this.collisionSprite.position.x = this.fromPosition.x;
+        this.collisionSprite.position.y = this.fromPosition.y;
+        this.collisionSprite.fresh = false;
     }
     
     public update(game : Phaser.Game){
         if (this.isKilled){
             return;
         }        
-        
-        let posString = `(${this.targetPoint.x},${this.targetPoint.y})`;
-        game.debug.text('Target Position: '+posString,0,50);   
-        posString = `(${this.sprite.position.x},${this.sprite.position.y})`;
-        game.debug.text('Sprite Position: '+posString,0,75);   
-        game.debug.text('X',this.targetPoint.x, this.targetPoint.y);
-        posString = `(${this.fromPosition.x},${this.fromPosition.y})`;
-        game.debug.text('From Position: '+posString, 500,50);
-        game.debug.body(this.sprite);
-        //game.debug.body())
-        this.move(game);
+
+        this.move(game);        
         if (!this.isMoving) {
-            this.checkMovement(game);
+            this.checkMovement(game);            
         }
-        
-    }
+
+    }    
 
     private move(game: Phaser.Game) {
         let isThere = false;
         switch (this.direction)
         {            
             case Direction.Down: 
-                isThere = (this.sprite.position.y >= this.targetPoint.y);
+                isThere = (this.sprite.position.y >= this.targetPoint.y);                
                 break;
             case Direction.Up:
-                isThere = (this.sprite.position.y <= this.targetPoint.y);
+                isThere = (this.sprite.position.y <= this.targetPoint.y);                
                 break;
             case Direction.Left:
-                isThere = (this.sprite.position.x <= this.targetPoint.x);
+                isThere = (this.sprite.position.x <= this.targetPoint.x);                
                 break;
             case Direction.Right:
-                isThere = (this.sprite.position.x >= this.targetPoint.x);
+                isThere = (this.sprite.position.x >= this.targetPoint.x);                
                 break;
         }
 
@@ -124,6 +128,10 @@ export class Snail{
         }      
         if (this.isMoving) {
             this.fromPosition = new Phaser.Point(this.sprite.position.x, this.sprite.position.y);            
+            const line: Phaser.Line = new Phaser.Line(this.fromPosition.x,this.fromPosition.y, this.targetPoint.x, this.targetPoint.y);
+            const midPoint: Phaser.Point = line.midPoint();
+            this.collisionSprite.position.x = midPoint.x;
+            this.collisionSprite.position.y = midPoint.y;
         }
     }        
 }
