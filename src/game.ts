@@ -51,9 +51,13 @@ class SimpleGame {
     this.game.load.spritesheet("snail", "assets/snails.png",8,8,2);
     this.snail = new Snail();
     this.scale = 3;
+    this.game.load.shader('scanlines', 'assets/shaders/scanline.frag');    
   }
 
   create() {
+    const filter = new Phaser.Filter(this.game, null, this.game.cache.getShader('scanlines'));
+    this.game.world.filters = [filter];
+
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
     this.maze = this.mapLoader.loadMap(Constants.StartingMap);        
         
