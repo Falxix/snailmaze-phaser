@@ -10,6 +10,9 @@ import { Tilemap } from "phaser-ce";
 import { Indicator } from './indicator';
 import { MapLoader } from "./mapLoader";
 import { Maze } from "./maze";
+import { BootState } from "./states/bootstate";
+import { PlayState } from "./states/playstate";
+import { GameManager } from "./gameManager";
 
 declare global {
   interface Window {
@@ -20,94 +23,35 @@ window.game = window.game || {};
 
 
 class SimpleGame {
-  baseX: number = 256;
-  baseY: number = 192;
-  scale: number = 3;
   game: Phaser.Game;
-  snail: Snail;
   mapScroll: number;
-  welcomeText : Phaser.Text;
-  gameRound : Indicator;
-  timeRemaining : Indicator;
   mapLoader: MapLoader;
-  maze: Maze;
   isSolved: boolean = false;
 
   constructor() {
     this.game = new Phaser.Game(
-      this.baseX * this.scale,
-      this.baseY * this.scale,
+      GameManager.BaseWidth * GameManager.Scale,
+      GameManager.BaseHeight * GameManager.Scale,
       Phaser.AUTO,
-      "content",
-      { preload: this.preload, create: this.create, update: this.update },
-      false,
-      false
-    );    
+      "content"
+    );
+    const bootState = new BootState(this.game);
+    const playState = new PlayState(this.game);
+    this.game.state.add('boot', bootState);
+    this.game.state.add('play', playState);
+    this.game.state.start('boot');
   }  
 
   preload() {
-    this.mapLoader = new MapLoader(this.game);    
-    this.mapLoader.loadAssets(Constants.StartingMap);    
-    this.game.load.spritesheet("snail", "assets/snails.png",8,8,2);
-    this.snail = new Snail();
-    this.scale = 3;
-    this.game.load.shader('scanlines', 'assets/shaders/scanline.frag');    
+    
   }
 
   create() {
-    const filter = new Phaser.Filter(this.game, null, this.game.cache.getShader('scanlines'));
-    this.game.world.filters = [filter];
-
-    this.game.physics.startSystem(Phaser.Physics.ARCADE);
-    this.maze = this.mapLoader.loadMap(Constants.StartingMap);        
-        
-    this.welcomeText = this.game.add.text(Constants.WelcomePosition.x,Constants.WelcomePosition.y,"WELCOME TO SNAIL MAZE!",Constants.FontStyle);
-    this.gameRound = new Indicator('RD',1);
-    this.timeRemaining = new Indicator('TIME',Constants.StartTime);    
-    setInterval(() => {
-      if (this.timeRemaining.Value > 0){
-        this.timeRemaining.Value--;
-      }      
-    },1000);
-    setInterval(() => {
-        this.maze.StartGroup.visible = !this.maze.StartGroup.visible;
-        this.maze.BannerGroup.visible = !this.maze.BannerGroup.visible;
-        //I want this to flash on the off cycle of the start group
-        this.maze.GoalGroup.visible = !this.maze.StartGroup.visible; 
-    }, 500);
-
-    this.gameRound.addToGame(this.game, Constants.RoundPosition);
-    this.timeRemaining.addToGame(this.game, Constants.TimePosition);
-
-    this.snail.create(this.game,this.scale);
-    this.snail.sprite.position.x = this.maze.StartPosition.x + (1 * this.maze.Scale +1.5);
-    this.snail.sprite.position.y = (this.maze.StartPosition.y - (1 * this.maze.Scale) +1.5);
+    
   }
 
   update(): void {
-    if (this.isSolved === true){
-      return;
-    }
-    //this.game.physics.arcade.collide(this.snail.sprite, this.maze.CollisionLayer,() => {this.snail.stop();});
-    const pos = this.snail.collisionSprite.position;    
-    let tiles = this.maze.CollisionLayer.getTiles(pos.x,pos.y, 3,3,true);
-    if (tiles.length > 0){
-      this.snail.stop();
-    }
-    this.snail.update(this.game);    
-    this.gameRound.update();
-    this.timeRemaining.update();
-    this.game.physics.arcade.overlap(
-       this.snail.sprite,
-       this.maze.GoalGroup,
-       () => 
-       {
-         this.isSolved = true;
-         this.snail.kill();
-         alert("Congratulations!");         
-       },
-       null,
-       this);       
+          
   }  
 }
 

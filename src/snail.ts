@@ -3,7 +3,7 @@ import { Direction } from "./enums";
 
 export class Snail{
     private spriteName : string = 'snail';
-    public movementUnit : number = 150;
+    public movementUnit : number = 200;
     public sprite : Phaser.Sprite;
     public collisionSprite: Phaser.Sprite;
     private isKilled: boolean = false;

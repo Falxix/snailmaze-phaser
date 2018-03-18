@@ -1,10 +1,19 @@
 import { MapConfiguration } from "./mapConfiguration";
+import { GameManager } from "./gameManager";
 
 export class Constants{
     public static FontStyle: Phaser.PhaserTextStyle = {
         font: "16px press_start_kregular",
         fill: "white",
         align: 'center'
+    };
+
+    public static BootFontStyle: Phaser.PhaserTextStyle = {
+        font: "24px press_start_kregular",
+        fill: "white",
+        align: 'left',
+        wordWrap: true,
+        wordWrapWidth: GameManager.BaseWidth * GameManager.Scale
     }
 
     public static readonly StartingMap: MapConfiguration = {
