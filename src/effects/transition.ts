@@ -3,18 +3,16 @@ import { Guid } from "../guid";
 import { Point } from "phaser-ce";
 
 export class Transition {
-    public onFinished: Promise<any>;
-
     private game: Phaser.Game;
     private image: Phaser.Image;
     private id: string;
     private onLoaded: Promise<any>;
-    private endPosition: Point;    
+    private endPosition: Point;
+    private transitionState: string;
+    private finishedPromise: (value: any) => void;
 
-    constructor(game: Phaser.Game, endPosition: Point) {
-        this.onFinished = new Promise<any>((resolve, reject) => {
-            this.complete = resolve;
-        });
+    constructor(game: Phaser.Game, endPosition: Point, transitionState: string) {
+        this.transitionState = transitionState;
         this.game = game;
         this.endPosition = endPosition;
         this.id = Guid.newGuid();
@@ -41,10 +39,8 @@ export class Transition {
             return;
         }        
         if (this.image.position.x <= -1000) {
-            this.complete();
+            this.game.state.start('play');
         }
         this.image.position.add(-10,0);
     }
-
-    private complete(value?: any) {}
 }

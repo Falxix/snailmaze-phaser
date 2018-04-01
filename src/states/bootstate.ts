@@ -47,12 +47,8 @@ export class BootState implements IState {
 
     private startTransition() {
         const point = new Point(-500,0);
-        this.transition = new Transition(this.game, point);
+        this.transition = new Transition(this.game, point, 'play');
         this.transition.start();
-        this.transition.onFinished.then(() =>{
-            this.game.state.start('play');
-        })
-            
     }
 
     private updateTransition(): void {
