@@ -2,11 +2,14 @@ import { IState } from "./i-state";
 import { Constants } from "../constants";
 import { MapLoader } from "../mapLoader";
 import { GameManager } from "../gameManager";
+import { Transition } from "../effects/transition";
+import { Point } from "phaser-ce";
 
 export class BootState implements IState {    
     private game: Phaser.Game;
+    private transition: Transition;;
 
-    constructor(game: Phaser.Game) {
+    constructor(game: Phaser.Game) {        
         this.game = game;        
     }
 
@@ -32,9 +35,30 @@ export class BootState implements IState {
         enjoy.scale.setMagnitude(GameManager.Scale / 1.25);
     }
     
-    public update(): void {
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.ENTER)) {
-            this.game.state.start('play');
+    public update(): void {        
+        this.updateTransition();
+        if (this.transition) {
+            return;
         }
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.ENTER)) {            
+            this.startTransition();
+        }
+    }
+
+    private startTransition() {
+        const point = new Point(-500,0);
+        this.transition = new Transition(this.game, point);
+        this.transition.start();
+        this.transition.onFinished.then(() =>{
+            this.game.state.start('play');
+        })
+            
+    }
+
+    private updateTransition(): void {
+        if (!this.transition) {
+            return;
+        }
+        this.transition.update();
     }
 }

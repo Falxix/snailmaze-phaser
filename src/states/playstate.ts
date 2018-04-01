@@ -77,7 +77,7 @@ export class PlayState implements IState {
          {
            this.isSolved = true;
            this.snail.kill();
-           alert("Congratulations!");         
+           this.game.state.start('play', true);
          },
          null,
          this); 

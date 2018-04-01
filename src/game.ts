@@ -2,7 +2,6 @@
 
 import "pixi";
 import "p2";
-import * as Phaser from "phaser-ce";
 import * as WebFont from 'webfontloader';
 import { Constants } from './constants';
 import { Snail } from "./snail";
