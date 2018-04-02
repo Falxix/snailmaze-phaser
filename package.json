@@ -6,6 +6,7 @@
   "dependencies": {
     "@types/webfontloader": "^1.6.29",
     "phaser-ce": "^2.10.0",
+    "phaser-state-transition": "^2.5.1",
     "webfontloader": "^1.6.28"
   },
   "devDependencies": {

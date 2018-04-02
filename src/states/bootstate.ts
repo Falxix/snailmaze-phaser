@@ -2,15 +2,21 @@ import { IState } from "./i-state";
 import { Constants } from "../constants";
 import { MapLoader } from "../mapLoader";
 import { GameManager } from "../gameManager";
-import { Transition } from "../effects/transition";
-import { Point } from "phaser-ce";
+import { Point, StateManager } from "phaser-ce";
+import { stateManagerStart } from "../effects/core/state-manager-start";
+import { StateTransition } from "../effects/core/state-transition";
 
 export class BootState implements IState {    
     private game: Phaser.Game;
-    private transition: Transition;;
 
     constructor(game: Phaser.Game) {        
-        this.game = game;        
+        this.game = game;
+        const cachedStart = Phaser.StateManager.prototype.start;
+        Phaser.StateManager.prototype.start = function start(stateId, slideInOption, slideOut, ...args) {
+            console.log('test');
+            stateManagerStart.call(this, stateId, slideInOption, slideOut);
+            cachedStart.call(this, stateId, ...args);
+        }
     }
 
     public preload(): void {        
@@ -36,25 +42,8 @@ export class BootState implements IState {
     }
     
     public update(): void {        
-        this.updateTransition();
-        if (this.transition) {
-            return;
-        }
         if (this.game.input.keyboard.isDown(Phaser.Keyboard.ENTER)) {            
-            this.startTransition();
+            this.game.state.start('play', StateTransition.Out.SlideLeft, StateTransition.In.SlideLeft);
         }
-    }
-
-    private startTransition() {
-        const point = new Point(-500,0);
-        this.transition = new Transition(this.game, point, 'play');
-        this.transition.start();
-    }
-
-    private updateTransition(): void {
-        if (!this.transition) {
-            return;
-        }
-        this.transition.update();
     }
 }
