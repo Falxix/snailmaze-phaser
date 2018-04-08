@@ -6,6 +6,10 @@ import { Maze } from "../maze";
 import { Indicator } from "../indicator";
 import { StateTransition } from "../effects/core/state-transition";
 import { StateSettings } from "./stateOptions";
+import { Sprite, State } from "phaser-ce";
+import { GoalGroup } from "../effects/goal-group";
+import { TimerObservable } from 'rxjs/observable/TimerObservable';
+import { Subscription } from "rxjs/Subscription";
 
 export class PlayState implements IState {
   private game: Phaser.Game;
@@ -16,6 +20,7 @@ export class PlayState implements IState {
   private timeRemaining : Indicator;
   private isSolved: boolean = false;
   private stateSettings: StateSettings;
+  private subscription: Subscription;
   
   constructor(game: Phaser.Game) {
     this.game = game;
@@ -30,6 +35,7 @@ export class PlayState implements IState {
     this.snail = new Snail();
   }
   create(): void {
+    this.subscription = new Subscription();
     const filter = new Phaser.Filter(this.game, null, this.game.cache.getShader('scanlines'));
     this.game.world.filters = [filter];
     this.maze = GameManager.MapLoader.loadMap(this.stateSettings.Map);
@@ -42,17 +48,20 @@ export class PlayState implements IState {
     this.gameRound = new Indicator("RD", 1);
     this.timeRemaining = new Indicator("TIME", Constants.StartTime);
 
-    setInterval(() => {
+    const timeIndicator = TimerObservable.create(0, 1000);
+    this.subscription.add(timeIndicator.subscribe(() => {
       if (this.timeRemaining.Value > 0) {
         this.timeRemaining.Value--;
       }
-    }, 1000);
-    setInterval(() => {
+    }));
+    
+    const flashers = TimerObservable.create(0, 500);
+    this.subscription.add(flashers.subscribe(() => {
       this.maze.StartGroup.visible = !this.maze.StartGroup.visible;
       this.maze.BannerGroup.visible = !this.maze.BannerGroup.visible;
       //I want this to flash on the off cycle of the start group
       this.maze.GoalGroup.visible = !this.maze.StartGroup.visible;
-    }, 500);
+    }));    
 
     this.gameRound.addToGame(this.game, Constants.RoundPosition);
     this.timeRemaining.addToGame(this.game, Constants.TimePosition);
@@ -80,13 +89,17 @@ export class PlayState implements IState {
       this.game.physics.arcade.overlap(
          this.snail.sprite,
          this.maze.GoalGroup,
-         () => 
-         {
-           this.isSolved = true;
-           this.snail.kill();
-           this.game.state.start('play', true, false, StateTransition.Out.SlideLeft, StateTransition.In.SlideLeft);
+         (sprite: Sprite, group: GoalGroup) => 
+         {            
+           this.completeMap(group);
          },
          null,
          this); 
+  }
+
+  completeMap(group: GoalGroup): void {
+    this.subscription.unsubscribe();
+    const settings = new StateSettings(group.nextMap);    
+    this.game.state.start('play', true, false, this.stateSettings);
   }
 }
