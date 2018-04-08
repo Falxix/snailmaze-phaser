@@ -52,6 +52,8 @@ export class PlayState implements IState {
     this.subscription.add(timeIndicator.subscribe(() => {
       if (this.timeRemaining.Value > 0) {
         this.timeRemaining.Value--;
+      } else {
+        this.timeOut();
       }
     }));
     
@@ -99,7 +101,18 @@ export class PlayState implements IState {
 
   completeMap(group: GoalGroup): void {
     this.subscription.unsubscribe();
+    this.snail.kill();
     const settings = new StateSettings(group.nextMap);    
     this.game.state.start('play', true, false, this.stateSettings);
+  }
+  
+  timeOut(): void {
+    this.subscription.unsubscribe();
+    alert('out of time');    
+    this.game.state.start('boot', true, false, StateSettings.NoTransition);
+
+    /*
+    * Make this do what it ought to
+    */
   }
 }

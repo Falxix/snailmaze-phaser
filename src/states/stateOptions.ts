@@ -3,6 +3,7 @@ import { StateTransition } from "../effects/core/state-transition";
 import { MapConfiguration } from "../mapConfiguration";
 import { Constants } from "../constants";
 import { GameManager } from "../gameManager";
+import { State } from "phaser-ce";
 
 export class StateSettings {
     SlideIn: TransitionSettings;
@@ -21,4 +22,10 @@ export class StateSettings {
         newMap.SpritePath = 'assets/objects.png';
         this.Map = newMap;
     }
+
+    static NoTransition: StateSettings = {
+        SlideIn: null,
+        SlideOut: null,
+        Map: null
+    };
 }
