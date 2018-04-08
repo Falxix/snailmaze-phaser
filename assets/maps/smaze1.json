@@ -93,6 +93,14 @@
                  "height":8,
                  "id":26,
                  "name":"goal",
+                 "properties":
+                    {
+                     "nextMap":"smaze1.json"
+                    },
+                 "propertytypes":
+                    {
+                     "nextMap":"string"
+                    },
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -111,6 +119,18 @@
                  "width":0,
                  "x":10,
                  "y":188
+                }, 
+                {
+                 "height":0,
+                 "id":30,
+                 "name":"",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":242,
+                 "y":101
                 }],
          "offsetx":1,
          "offsety":0,
@@ -120,7 +140,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":30,
+ "nextobjectid":33,
  "orientation":"orthogonal",
  "properties":
     {

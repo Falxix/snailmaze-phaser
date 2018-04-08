@@ -4,6 +4,8 @@ import { Constants } from "../constants";
 import { Snail } from "../snail";
 import { Maze } from "../maze";
 import { Indicator } from "../indicator";
+import { StateTransition } from "../effects/core/state-transition";
+import { StateSettings } from "./stateOptions";
 
 export class PlayState implements IState {
   private game: Phaser.Game;
@@ -13,19 +15,24 @@ export class PlayState implements IState {
   private gameRound : Indicator;
   private timeRemaining : Indicator;
   private isSolved: boolean = false;
+  private stateSettings: StateSettings;
   
   constructor(game: Phaser.Game) {
     this.game = game;
   }
 
+  init(stateSettings: StateSettings): void{
+      this.stateSettings = stateSettings;
+  }
+
   preload(): void {
-    GameManager.MapLoader.loadAssets(Constants.StartingMap);
+    GameManager.MapLoader.loadAssets(this.stateSettings.Map);
     this.snail = new Snail();
   }
   create(): void {
     const filter = new Phaser.Filter(this.game, null, this.game.cache.getShader('scanlines'));
     this.game.world.filters = [filter];
-    this.maze = GameManager.MapLoader.loadMap(Constants.StartingMap);
+    this.maze = GameManager.MapLoader.loadMap(this.stateSettings.Map);
     this.welcomeText = this.game.add.text(
       Constants.WelcomePosition.x,
       Constants.WelcomePosition.y,
@@ -77,7 +84,7 @@ export class PlayState implements IState {
          {
            this.isSolved = true;
            this.snail.kill();
-           this.game.state.start('play', true);
+           this.game.state.start('play', true, false, StateTransition.Out.SlideLeft, StateTransition.In.SlideLeft);
          },
          null,
          this); 

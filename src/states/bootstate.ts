@@ -5,6 +5,7 @@ import { GameManager } from "../gameManager";
 import { Point, StateManager } from "phaser-ce";
 import { stateManagerStart } from "../effects/core/state-manager-start";
 import { StateTransition } from "../effects/core/state-transition";
+import { StateSettings } from "./stateOptions";
 
 export class BootState implements IState {    
     private game: Phaser.Game;
@@ -12,10 +13,12 @@ export class BootState implements IState {
     constructor(game: Phaser.Game) {        
         this.game = game;
         const cachedStart = Phaser.StateManager.prototype.start;
-        Phaser.StateManager.prototype.start = function start(stateId, slideInOption, slideOut, ...args) {
-            console.log('test');
-            stateManagerStart.call(this, stateId, slideInOption, slideOut);
-            cachedStart.call(this, stateId, ...args);
+        Phaser.StateManager.prototype.start = function start(stateId: string, clearWorld?: boolean, clearCache?: boolean, settings?: StateSettings) {
+            if (!settings) {
+                settings = new StateSettings(null);
+            }
+            stateManagerStart.call(this, stateId, settings.SlideOut, settings.SlideIn);            
+            cachedStart.call(this, stateId, true, false, settings);
         }
     }
 
@@ -42,8 +45,9 @@ export class BootState implements IState {
     }
     
     public update(): void {        
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.ENTER)) {            
-            this.game.state.start('play', StateTransition.Out.SlideLeft, StateTransition.In.SlideLeft);
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.ENTER)) {
+            const settings = new StateSettings('smaze1.json');            
+            this.game.state.start('play', true, false, settings);
         }
     }
 }

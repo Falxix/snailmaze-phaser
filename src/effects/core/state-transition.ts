@@ -1,5 +1,6 @@
 import { Transition } from "../transition/transition";
 import { TransitionSettings } from "../transition/transition-settings";
+import { TransitionCompass } from "./transition-compass";
 
 export class StateTransition extends Phaser.Plugin{
     constructor(game: Phaser.Game, parent:Phaser.PluginManager){
@@ -10,7 +11,7 @@ export class StateTransition extends Phaser.Plugin{
         return Transition.Default(options);
     }
 
-    public static In: any = {
+    public static In: TransitionCompass = {
         SlideLeft: Transition.Default({
             intro: true,
             ease: null,
@@ -76,7 +77,7 @@ export class StateTransition extends Phaser.Plugin{
         })
     };
 
-    public static Out: any = {
+    public static Out: TransitionCompass = {
         SlideLeft: Transition.Default({
             intro: null,
             ease: null,

@@ -15,15 +15,7 @@ export class Constants{
         wordWrap: true,
         wordWrapWidth: GameManager.BaseWidth * GameManager.Scale
     }
-
-    public static readonly StartingMap: MapConfiguration = {
-        MapPath: "assets/maps/smaze1.json",
-        TilePath: "assets/tile.png",
-        MapScale: 3,
-        CollisionTiles: [1],
-        SpritePath: "assets/objects.png"
-    }
-
+    
     public static readonly StartSpriteName: string = 'snailStart';
     public static readonly EndSpriteName: string = 'goal';
     public static readonly StartTime : number = 60;
