@@ -95,7 +95,7 @@
                  "name":"goal",
                  "properties":
                     {
-                     "nextMap":"smaze1.json"
+                     "nextMap":"smaze2.json"
                     },
                  "propertytypes":
                     {
@@ -153,7 +153,7 @@
      "tiles":"string"
     },
  "renderorder":"right-down",
- "tiledversion":"1.1.2",
+ "tiledversion":"1.1.4",
  "tileheight":1,
  "tilesets":[
         {

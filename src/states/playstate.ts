@@ -112,7 +112,7 @@ export class PlayState implements IState {
     this.subscription.unsubscribe();
     this.snail.kill();
     const settings = new StateSettings(group.nextMap);    
-    this.game.state.start('play', true, false, this.stateSettings);
+    this.game.state.start('play', true, false, settings);
   }
   
   timeOut(): void {
