@@ -15,7 +15,8 @@ export class PlayState implements IState {
   private game: Phaser.Game;
   private snail: Snail;
   private maze: Maze;
-  private welcomeText : Phaser.Text;  
+  private welcomeText : Phaser.Text;
+  private timeUp: Phaser.Text;  
   private gameRound : Indicator;
   private timeRemaining : Indicator;
   private isSolved: boolean = false;
@@ -45,6 +46,14 @@ export class PlayState implements IState {
       "WELCOME TO SNAIL MAZE!",
       Constants.FontStyle
     );
+    this.timeUp = this.game.add.text(
+      this.game.width / 2.25,
+      this.game.height / 3.25
+      ,
+      "TIME UP",
+      Constants.TimeUpFont
+    );
+    this.timeUp.visible = false;
     this.gameRound = new Indicator("RD", 1);
     this.timeRemaining = new Indicator("TIME", Constants.StartTime);
 
@@ -107,12 +116,25 @@ export class PlayState implements IState {
   }
   
   timeOut(): void {
-    this.subscription.unsubscribe();
-    alert('out of time');    
-    this.game.state.start('boot', true, false, StateSettings.NoTransition);
-
-    /*
-    * Make this do what it ought to
-    */
+    this.snail.kill();
+    const timer = TimerObservable.create(5000, 5000);
+    const flicker = TimerObservable.create(0, 250);
+    let isFlipped = false;
+    this.timeUp.visible = true;
+    this.subscription.add(flicker.subscribe(()=>{
+      // flicker the timeout text
+      isFlipped = !isFlipped;
+      if (isFlipped){
+        this.timeUp.setStyle(Constants.TimeUpFont)
+      } else {
+        this.timeUp.setStyle(Constants.TimeUpFontAlternate);
+      }
+    }));
+    this.subscription.add(timer.subscribe(()=>{
+      // kick you back to the boot screen
+      this.subscription.unsubscribe();
+      this.game.state.start('boot', true, false, StateSettings.NoTransition);
+    }));
+    
   }
 }

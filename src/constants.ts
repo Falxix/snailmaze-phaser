@@ -14,7 +14,21 @@ export class Constants{
         align: 'left',
         wordWrap: true,
         wordWrapWidth: GameManager.BaseWidth * GameManager.Scale
-    }
+    };
+
+    public static TimeUpFont: Phaser.PhaserTextStyle = {
+        font: "16px press_start_kregular",
+        fill: "white",
+        align: "center",
+        backgroundColor: "black"
+    };
+
+    public static TimeUpFontAlternate: Phaser.PhaserTextStyle = {
+        font: "16px press_start_kregular",
+        fill: "yellow",
+        align: "center",
+        backgroundColor: "black"
+    };
     
     public static readonly StartSpriteName: string = 'snailStart';
     public static readonly EndSpriteName: string = 'goal';
