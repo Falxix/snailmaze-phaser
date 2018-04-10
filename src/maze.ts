@@ -21,7 +21,6 @@ export class Maze {
     group.enableBody = true;
     group.scale.x = this.Scale;
     group.scale.y = this.Scale;
-    group.pivot = new Phaser.Point(-1,0);
     group.physicsBodyType = Phaser.Physics.ARCADE;
     return group;
   }

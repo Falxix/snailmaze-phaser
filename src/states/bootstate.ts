@@ -46,7 +46,7 @@ export class BootState implements IState {
     
     public update(): void {        
         if (this.game.input.keyboard.isDown(Phaser.Keyboard.ENTER)) {
-            const settings = new StateSettings('smaze1.json');            
+            const settings = new StateSettings('smaze2.json');            
             this.game.state.start('play', true, false, settings);
         }
     }

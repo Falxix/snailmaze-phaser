@@ -11,7 +11,7 @@ export class MapLoader{
     {        
         this.game.load.tilemap("map",config.MapPath,null,Phaser.Tilemap.TILED_JSON);        
         this.game.load.image("tile",config.TilePath);
-        this.game.load.spritesheet('atlas',config.SpritePath,8,8);
+        this.game.load.spritesheet('atlas',config.SpritePath,8,8,7,0,2);
     }
 
     public loadMap(config: MapConfiguration): Maze{
@@ -35,7 +35,6 @@ export class MapLoader{
         map.createFromObjects("objectLayer",7,'atlas',4,true,false,maze.BannerGroup);
         map.createFromObjects("objectLayer",8,'atlas',5,true,false,maze.BannerGroup);
         map.createFromObjects("objectLayer",9,'atlas',6,true,false,maze.GoalGroup);
-        maze.StartGroup.pivot = new Phaser.Point(-1,0);
         let mapObjects = map.objects as any;        
         let objectLayer = mapObjects.objectLayer as any[];        
         maze.Objects = objectLayer;

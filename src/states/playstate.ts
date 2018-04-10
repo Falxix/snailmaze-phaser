@@ -79,16 +79,15 @@ export class PlayState implements IState {
 
     this.snail.create(this.game, GameManager.Scale);
     this.snail.sprite.position.x =
-      this.maze.StartPosition.x + (1 * this.maze.Scale + 1.5);
+      this.maze.StartPosition.x + (1 * this.maze.Scale);
     this.snail.sprite.position.y =
-      this.maze.StartPosition.y - 1 * this.maze.Scale + 1.5;
+      this.maze.StartPosition.y - (1 * this.maze.Scale);
   }
   
   update(): void {
     if (this.isSolved === true){
         return;
       }
-      //this.game.physics.arcade.collide(this.snail.sprite, this.maze.CollisionLayer,() => {this.snail.stop();});
       const pos = this.snail.collisionSprite.position;    
       let tiles = this.maze.CollisionLayer.getTiles(pos.x,pos.y, 3,3,true);
       if (tiles.length > 0){
