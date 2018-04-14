@@ -17,6 +17,7 @@ export class PlayState implements IState {
   private maze: Maze;
   private welcomeText : Phaser.Text;
   private timeUp: Phaser.Text;  
+  private congratulations: Phaser.Text;  
   private gameRound : Indicator;
   private timeRemaining : Indicator;
   private isSolved: boolean = false;
@@ -52,8 +53,17 @@ export class PlayState implements IState {
       ,
       "TIME UP",
       Constants.TimeUpFont
-    );
+    );    
     this.timeUp.visible = false;
+    this.congratulations = this.game.add.text(
+      this.game.width / 2.75,
+      this.game.height / 3.25
+      ,
+      "CONGRATULATIONS!",
+      Constants.TimeUpFont
+    );
+    this.congratulations.visible = false;
+
     this.gameRound = new Indicator("RD", 1);
     this.timeRemaining = new Indicator("TIME", Constants.StartTime);
 
@@ -107,13 +117,30 @@ export class PlayState implements IState {
          this); 
   }
 
-  completeMap(group: GoalGroup): void {
-    this.subscription.unsubscribe();
+  completeMap(group: GoalGroup): void {    
     this.snail.kill();
-    const settings = new StateSettings(group.nextMap);    
-    this.game.state.start('play', true, false, settings);
+    if (group.nextMap) {
+      const settings = new StateSettings(group.nextMap);    
+      this.loadNewLevel(settings);
+    } else {
+      this.congratulate();
+    }
   }
   
+  loadNewLevel(stateSettings: StateSettings): void {
+    this.subscription.unsubscribe();
+    this.game.state.start('play', true, false, stateSettings);
+  }
+
+  congratulate(): void {
+    const timer = TimerObservable.create(5000, 5000)
+    this.congratulations.visible = true;
+    this.subscription.add(timer.subscribe(() => {      
+      this.subscription.unsubscribe();
+      this.game.state.start('boot', true, false, StateSettings.NoTransition);
+    }));
+  }
+
   timeOut(): void {
     this.snail.kill();
     const timer = TimerObservable.create(5000, 5000);
