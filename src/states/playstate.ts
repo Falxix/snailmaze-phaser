@@ -64,10 +64,10 @@ export class PlayState implements IState {
     );
     this.congratulations.visible = false;
 
-    this.gameRound = new Indicator("RD", 1);
-    this.timeRemaining = new Indicator("TIME", Constants.StartTime);
+    this.gameRound = new Indicator("RD", this.stateSettings.CurrentRound);
+    this.timeRemaining = new Indicator("TIME", this.stateSettings.CurrentTime + this.maze.TimeAdded);
 
-    const timeIndicator = TimerObservable.create(0, 1000);
+    const timeIndicator = TimerObservable.create(1000, 1100);
     this.subscription.add(timeIndicator.subscribe(() => {
       if (this.timeRemaining.Value > 0) {
         this.timeRemaining.Value--;
@@ -120,7 +120,9 @@ export class PlayState implements IState {
   completeMap(group: GoalGroup): void {    
     this.snail.kill();
     if (group.nextMap) {
-      const settings = new StateSettings(group.nextMap);    
+      const settings = new StateSettings(group.nextMap);
+      settings.CurrentTime = this.timeRemaining.Value;
+      settings.CurrentRound = this.stateSettings.CurrentRound+1;
       this.loadNewLevel(settings);
     } else {
       this.congratulate();
@@ -128,7 +130,7 @@ export class PlayState implements IState {
   }
   
   loadNewLevel(stateSettings: StateSettings): void {
-    this.subscription.unsubscribe();
+    this.subscription.unsubscribe();    
     this.game.state.start('play', true, false, stateSettings);
   }
 

@@ -9,6 +9,7 @@ export class Maze {
   GoalGroup: Phaser.Group;
   StartGroup: Phaser.Group;
   BannerGroup: Phaser.Group;
+  TimeAdded: number;
 
   constructor(scale: number){
     this.Scale = scale;

@@ -9,6 +9,8 @@ export class StateSettings {
     SlideIn: TransitionSettings;
     SlideOut: TransitionSettings;
     Map: MapConfiguration;
+    CurrentRound?: number = 1;
+    CurrentTime?: number = 60;
 
     constructor(nextMap: string) {
         this.SlideOut = StateTransition.Out.SlideLeft;
