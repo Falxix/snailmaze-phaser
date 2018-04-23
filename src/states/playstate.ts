@@ -23,6 +23,7 @@ export class PlayState implements IState {
   private isSolved: boolean = false;
   private stateSettings: StateSettings;
   private subscription: Subscription;
+  private isTimerRunning: boolean = false;
   
   constructor(game: Phaser.Game) {
     this.game = game;
@@ -30,6 +31,7 @@ export class PlayState implements IState {
 
   init(stateSettings: StateSettings): void{
       this.stateSettings = stateSettings;
+      this.isTimerRunning = false;
   }
 
   preload(): void {
@@ -69,6 +71,9 @@ export class PlayState implements IState {
 
     const timeIndicator = TimerObservable.create(1000, 1100);
     this.subscription.add(timeIndicator.subscribe(() => {
+      if (!this.isTimerRunning) {
+        return;
+      }
       if (this.timeRemaining.Value > 0) {
         this.timeRemaining.Value--;
       } else {
@@ -97,28 +102,30 @@ export class PlayState implements IState {
   update(): void {
     if (this.isSolved === true){
         return;
-      }
-      const pos = this.snail.collisionSprite.position;    
-      let tiles = this.maze.CollisionLayer.getTiles(pos.x,pos.y, 3,3,true);
-      if (tiles.length > 0){
-        this.snail.stop();
-      }
-      this.snail.update(this.game);    
-      this.gameRound.update();
-      this.timeRemaining.update();
-      this.game.physics.arcade.overlap(
-         this.snail.sprite,
-         this.maze.GoalGroup,
-         (sprite: Sprite, group: GoalGroup) => 
-         {            
-           this.completeMap(group);
-         },
-         null,
-         this); 
+    }
+    this.isTimerRunning = true;
+    const pos = this.snail.collisionSprite.position;    
+    let tiles = this.maze.CollisionLayer.getTiles(pos.x,pos.y, 3,3,true);
+    if (tiles.length > 0){
+      this.snail.stop();
+    }
+    this.snail.update(this.game);    
+    this.gameRound.update();
+    this.timeRemaining.update();
+    this.game.physics.arcade.overlap(
+        this.snail.sprite,
+        this.maze.GoalGroup,
+        (sprite: Sprite, group: GoalGroup) => 
+        {            
+          this.completeMap(group);
+        },
+        null,
+        this); 
   }
 
   completeMap(group: GoalGroup): void {    
     this.snail.kill();
+    this.isTimerRunning = false;
     if (group.nextMap) {
       const settings = new StateSettings(group.nextMap);
       settings.CurrentTime = this.timeRemaining.Value;
