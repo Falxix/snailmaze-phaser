@@ -38,16 +38,15 @@ export class PlayState implements IState {
   preload(): void {
     GameManager.MapLoader.loadAssets(this.stateSettings.Map);
     this.snail = new Snail();
-  }
-  create(): void {
     this.isSolved = false;
+  }
+
+  create(): void {
     this.subscription = new Subscription();
     const filter = new Phaser.Filter(this.game, null, this.game.cache.getShader('scanlines'));
     this.game.world.filters = [filter];
     this.maze = GameManager.MapLoader.loadMap(this.stateSettings.Map);
-    this.music = this.game.add.audio('main');
-    this.music.loop = true;
-    this.music.play();
+    
     this.welcomeText = this.game.add.text(
       Constants.WelcomePosition.x,
       Constants.WelcomePosition.y,
@@ -85,14 +84,6 @@ export class PlayState implements IState {
         this.timeOut();
       }
     }));
-    
-    const flashers = TimerObservable.create(0, 500);
-    this.subscription.add(flashers.subscribe(() => {
-      this.maze.StartGroup.visible = !this.maze.StartGroup.visible;
-      this.maze.BannerGroup.visible = !this.maze.BannerGroup.visible;
-      //I want this to flash on the off cycle of the start group
-      this.maze.GoalGroup.visible = !this.maze.StartGroup.visible;
-    }));    
 
     this.gameRound.addToGame(this.game, Constants.RoundPosition);
     this.timeRemaining.addToGame(this.game, Constants.TimePosition);
@@ -103,12 +94,28 @@ export class PlayState implements IState {
     this.snail.sprite.position.y =
       this.maze.StartPosition.y - (1 * this.maze.Scale);
   }
+
+  // once the transition is over, start playing music,
+  // counting time, etc.
+  created(): void{
+    this.music = this.game.add.audio('main');
+    this.music.loop = true;
+    this.music.play();
+    this.isTimerRunning = true;
+    
+    const flashers = TimerObservable.create(0, 500);
+    this.subscription.add(flashers.subscribe(() => {
+      this.maze.StartGroup.visible = !this.maze.StartGroup.visible;
+      this.maze.BannerGroup.visible = !this.maze.BannerGroup.visible;
+      //I want this to flash on the off cycle of the start group
+      this.maze.GoalGroup.visible = !this.maze.StartGroup.visible;
+    }));    
+  }
   
   update(): void {
     if (this.isSolved === true){
         return;
     }
-    this.isTimerRunning = true;
     const pos = this.snail.collisionSprite.position;    
     let tiles = this.maze.CollisionLayer.getTiles(pos.x,pos.y, 3,3,true);
     if (tiles.length > 0){

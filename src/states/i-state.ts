@@ -1,5 +1,5 @@
 export interface IState {
     preload(): void;
-    create(): void;
+    create(isTransitionOver: boolean): void;
     update(): void;
 }

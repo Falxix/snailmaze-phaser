@@ -41,10 +41,13 @@ export function stateManagerStart(stateId: string, slideOutOptions: TransitionSe
                     };
                 }
 
-                _slide.go(slideOutOptions);
-
                 // Put the original create back
                 _state.create = _cachedStateCreate;
+
+                _slide.go(slideOutOptions)
+                    .then(() => {
+                        _state.created();
+                    });
             };
         }(_state, slideOutOptions, slideInOptions));
     }
