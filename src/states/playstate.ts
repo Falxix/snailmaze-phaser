@@ -24,6 +24,7 @@ export class PlayState implements IState {
   private stateSettings: StateSettings;
   private subscription: Subscription;
   private isTimerRunning: boolean = false;
+  private music: Phaser.Sound;
   
   constructor(game: Phaser.Game) {
     this.game = game;
@@ -39,10 +40,14 @@ export class PlayState implements IState {
     this.snail = new Snail();
   }
   create(): void {
+    this.isSolved = false;
     this.subscription = new Subscription();
     const filter = new Phaser.Filter(this.game, null, this.game.cache.getShader('scanlines'));
     this.game.world.filters = [filter];
     this.maze = GameManager.MapLoader.loadMap(this.stateSettings.Map);
+    this.music = this.game.add.audio('main');
+    this.music.loop = true;
+    this.music.play();
     this.welcomeText = this.game.add.text(
       Constants.WelcomePosition.x,
       Constants.WelcomePosition.y,
@@ -123,17 +128,24 @@ export class PlayState implements IState {
         this); 
   }
 
-  completeMap(group: GoalGroup): void {    
-    this.snail.kill();
+  completeMap(group: GoalGroup): void {   
+    this.isSolved = true;
+    console.log('entered') ;
     this.isTimerRunning = false;
-    if (group.nextMap) {
-      const settings = new StateSettings(group.nextMap);
-      settings.CurrentTime = this.timeRemaining.Value;
-      settings.CurrentRound = this.stateSettings.CurrentRound+1;
-      this.loadNewLevel(settings);
-    } else {
-      this.congratulate();
+    this.snail.kill();
+    this.music.stop();
+    const levelEnd: Phaser.Sound = this.game.add.audio('levelend');
+    levelEnd.onEndedHandler =() => {
+      if (group.nextMap) {
+        const settings = new StateSettings(group.nextMap);
+        settings.CurrentTime = this.timeRemaining.Value;
+        settings.CurrentRound = this.stateSettings.CurrentRound+1;
+        this.loadNewLevel(settings);
+      } else {
+        this.congratulate();
+      }
     }
+    levelEnd.play();
   }
   
   loadNewLevel(stateSettings: StateSettings): void {
@@ -142,12 +154,13 @@ export class PlayState implements IState {
   }
 
   congratulate(): void {
-    const timer = TimerObservable.create(5000, 5000)
+    const gameEnd = this.game.add.sound('gameend');
     this.congratulations.visible = true;
-    this.subscription.add(timer.subscribe(() => {      
-      this.subscription.unsubscribe();
-      this.game.state.start('boot', true, false, StateSettings.NoTransition);
-    }));
+    gameEnd.onEndedHandler = () => {      
+        this.subscription.unsubscribe();
+        this.game.state.start('boot', true, false, StateSettings.NoTransition);
+    };
+    gameEnd.play();    
   }
 
   timeOut(): void {

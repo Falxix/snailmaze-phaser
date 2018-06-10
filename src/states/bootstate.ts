@@ -26,6 +26,9 @@ export class BootState implements IState {
         this.game.load.image('enjoy', 'assets/enjoy.png');        
         this.game.load.spritesheet('snail', 'assets/snails.png',8,8,2);
         this.game.load.shader('scanlines', 'assets/shaders/scanline.frag');
+        this.game.load.audio('main','assets/sounds/main.mp3');
+        this.game.load.audio('levelend','assets/sounds/levelend.mp3');
+        this.game.load.audio('gameend','assets/sounds/gameend.mp3');
         GameManager.MapLoader = new MapLoader(this.game);
     }
 
