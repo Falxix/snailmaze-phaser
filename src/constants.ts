@@ -37,5 +37,5 @@ export class Constants{
     public static readonly RoundPosition: Phaser.Point=new Phaser.Point(400,150);
     public static readonly TimePosition: Phaser.Point=new Phaser.Point(500,150);    
     public static readonly ObjectSize: number=8;
-    public static readonly StartingMap = 'smaze12.json';
+    public static readonly StartingMap = 'smaze1.json';
 }
