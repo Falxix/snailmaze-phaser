@@ -42,6 +42,12 @@ export class PlayState implements IState {
   }
 
   create(): void {
+    this.game.input.keyboard.addKeyCapture([
+      Phaser.Keyboard.LEFT,
+      Phaser.Keyboard.RIGHT,
+      Phaser.Keyboard.DOWN,
+      Phaser.Keyboard.UP,
+      Phaser.Keyboard.ENTER]);
     this.subscription = new Subscription();
     const filter = new Phaser.Filter(this.game, null, this.game.cache.getShader('scanlines'));
     this.game.world.filters = [filter];
